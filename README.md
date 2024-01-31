@@ -3,21 +3,19 @@
 <p align="center">
 <a href="https://arxiv.org"><img src="https://img.shields.io/badge/arXiv-Paper-<color>"></a>
 </p>
-This is the official repository of the paper: [Hi-SAM: Marrying Segment Anything Model for Hierarchical Text Segmentation](https://arxiv.org).
 
+This is the official repository of the paper [Hi-SAM: Marrying Segment Anything Model for Hierarchical Text Segmentation](https://arxiv.org).
 
 ## :sparkles: Highlight
 
 ![overview](.asset/overview.png)
 
-- **Hierarchical Text Segmentation.** Hi-SAM unifies text segmentation across stroke, word, text-line, and paragraph level. Hi-SAM also achieves layout analysis as a by-product.
-- **High-Quality Text Stroke Segmentation.** High-quality text stroke segmentation by leveraging 1024×1024 mask feature resolution. 
+- **Hierarchical Text Segmentation.** Hi-SAM unifies text segmentation across stroke, word, text-line, and paragraph levels. Hi-SAM also achieves layout analysis as a by-product.
+- **High-Quality Text Stroke Segmentation.** High-quality text stroke segmentation by introducing mask feature of 1024×1024 resolution with minimal modification in SAM's original mask decoder. 
 - **Automatic and Interactive.** Hi-SAM supports both automatic mask generation and interactive promptable mode. Given a single-point prompt, Hi-SAM provides word, text-line, and paragraph masks.
-
 
 ## :bulb: Overview of Hi-SAM
 ![Hi-SAM](.asset/Hi-SAM.png)
-
 
 ## :label: TODO 
 
