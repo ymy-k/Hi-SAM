@@ -23,7 +23,7 @@ This is the official repository for Hi-SAM, a unified hierarchical text segmenta
 
 
 ## :fire: News
-- **[`2024/02/0x`]**: Inference and evaluation codes are released. Checkpoints are available. Some applications are provided.
+- **[`2024/02/23`]**: Inference and evaluation codes are released. Checkpoints are available. Some applications are provided.
 
 
 ## :hammer_and_wrench: Install
