@@ -13,7 +13,7 @@
 
 (1) For Total-Text, rename` groundtruth_pixel/Train/img61.JPG` to ` groundtruth_pixel/Train/img61.jpg` .
 
-(2) For TextSeg, see ` TextSeg/process_textseg.py` and use it to split the original data.
+(2) For TextSeg, see `TextSeg/process_textseg.py` and use it to split the original data.
 
 (3) Organize the datasets as the following structure:
 

@@ -5,7 +5,8 @@
 </p>
 
 > [Hi-SAM: Marrying Segment Anything Model for Hierarchical Text Segmentation](https://arxiv.org/abs/2401.17904).
-> [arXiv preprint]
+>
+>  [arXiv preprint]
 
 This is the official repository for Hi-SAM, a unified hierarchical text segmentation model. Refer to our paper for more details.
 
