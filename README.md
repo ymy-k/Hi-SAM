@@ -20,7 +20,7 @@ This is the official repository for Hi-SAM, a unified hierarchical text segmenta
 
 - **Automatic and Interactive.** Hi-SAM supports both automatic mask generation and interactive promptable mode. Given a single-point prompt, Hi-SAM provides word, text-line, and paragraph masks.
 
-- **High-Quality Text Stroke Segmentation & Stroke Labeling Assistant.** High-quality text stroke segmentation by introducing mask feature of 1024×1024 resolution with minimal modification in SAM's original mask decoder. Our contributed stroke level annotations for [HierText](https://github.com/google-research-datasets/hiertext) can be downloaded following [data_preparation.md](datasets/data_preparation.md). Some examples are shown displayed here:
+- **High-Quality Text Stroke Segmentation & Stroke Labeling Assistant.** High-quality text stroke segmentation by introducing mask feature of 1024×1024 resolution with minimal modification in SAM's original mask decoder. Our contributed stroke level annotations for [HierText](https://github.com/google-research-datasets/hiertext) can be downloaded following [data_preparation.md](datasets/data_preparation.md). Some examples are displayed here:
 
 ![example](datasets/HierText/example.gif)
 
