@@ -9,8 +9,6 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from .hi_sam import HiSam
-
 from typing import Optional, Tuple
 from hi_sam.data.transforms import ResizeLongestSide
 
@@ -18,10 +16,12 @@ from hi_sam.data.transforms import ResizeLongestSide
 class AutoMaskGenerator:
     def __init__(
         self,
-        sam_model: HiSam,
+        sam_model,
+        efficient_hisam: bool=False,
     ) -> None:
         super().__init__()
         self.model = sam_model
+        self.efficient_hisam = efficient_hisam
         self.transform = ResizeLongestSide(sam_model.image_encoder.img_size)
         self.reset_image()
         self.reset_fgmask()
@@ -145,9 +145,10 @@ class AutoMaskGenerator:
             point_coords,
             point_labels
     ):
-        point_embeddings, _ = self.model.prompt_encoder(
-            points=(point_coords, point_labels), boxes=None, masks=None
-        )
+        if self.efficient_hisam:
+            point_embeddings = self.model.prompt_encoder(point_coords, point_labels)
+        else:
+            point_embeddings, _ = self.model.prompt_encoder(points=(point_coords, point_labels), boxes=None, masks=None)
         hi_masks_logits, hi_iou_preds, word_masks_logits = self.model.hi_decoder(
             image_embeddings=self.features,
             image_pe=self.model.prompt_encoder.get_dense_pe(),
@@ -219,7 +220,7 @@ class AutoMaskGenerator:
         word_masks = word_masks[keep]
         affinity = get_para_iou(para_masks=(masks[:, -1, :, :] > self.model.mask_threshold))
         
-        del masks  # only return word masks here for evaluation on HierText
+        del masks
         word_masks = self.model.postprocess_masks(word_masks, self.input_size, self.original_size)
         word_masks = word_masks > self.model.mask_threshold
         masks_np = word_masks.cpu().numpy()

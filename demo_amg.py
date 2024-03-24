@@ -32,7 +32,7 @@ def get_args_parser():
     parser.add_argument("--existing_fgmask_input", type=str, default='./datasets/HierText/val_fgmask/',
                         help="A file or directory of foreground masks.")
     parser.add_argument("--model-type", type=str, default="vit_l",
-                        help="The type of model to load, in ['vit_h', 'vit_l', 'vit_b']")
+                        help="The type of model to load, in ['vit_h', 'vit_l', 'vit_b', 'vit_s']")
     parser.add_argument("--checkpoint", type=str, required=True,
                         help="The path to the SAM checkpoint to use for mask generation.")
     parser.add_argument("--device", type=str, default="cuda",
@@ -116,7 +116,11 @@ if __name__ == '__main__':
     hisam.eval()
     hisam.to(args.device)
     print("Loaded model")
-    amg = AutoMaskGenerator(hisam)
+    if args.model_type == 'vit_s' or args.model_type == 'vit_t':
+        efficient_hisam = True
+    else:
+        efficient_hisam = False
+    amg = AutoMaskGenerator(hisam, efficient_hisam=efficient_hisam)
     none_num = 0
 
     if args.eval:
@@ -153,7 +157,7 @@ if __name__ == '__main__':
             batch_points_num=args.batch_points,
             score_thresh=0.5,
             nms_thresh=0.5,
-        )  # only return word masks here for evaluation
+        )  # only return word masks here
 
         if args.eval:
             if masks is None:

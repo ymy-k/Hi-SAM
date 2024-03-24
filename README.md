@@ -30,6 +30,7 @@ This is the official repository for Hi-SAM, a unified hierarchical text segmenta
 
 
 ## :fire: News
+- **[`2024/03/24`]**: Update Efficient Hi-SAM-S leveraging [EfficientSAM](https://github.com/yformer/EfficientSAM).
 - **[`2024/02/23`]**: Inference and evaluation codes are released. Checkpoints are available. Some applications are provided.
 
 
@@ -74,6 +75,7 @@ You can download the following model weights and put them in `pretrained_checkpo
 
 |Model|Used Dataset|Weights|Stroke F-score|Word F-score|Text-Line F-score|Paragraph F-score|
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|
+|Efficient Hi-SAM-S|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcpZZz-xZiDiRBjfLQ?e=GK4uHo)|75.60|waiting|results||
 |Hi-SAM-B|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcosk3ZK1dImhxaW9g?e=xTsegH)|79.78|78.34|82.15|71.15|
 |Hi-SAM-L|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcovMjJKfH6baFBTGw?e=T3IrUf)|82.90|81.83|84.85|74.49|
 |Hi-SAM-H|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcoxoNjp1IG7xitzrg?e=0z4QhJ)|83.36|82.86|85.30|75.97|
@@ -93,7 +95,7 @@ python demo_hisam.py --checkpoint pretrained_checkpoint/sam_tss_l_hiertext.pth -
 ```
 
 - `--checkpoint`: the model path.
-- `--model-type`: the backbone type. Use `vit_b` for ViT-Base backbone,  `vit_l` for ViT-Large,  `vit_h` for ViT-Huge. 
+- `--model-type`: the backbone type. Use `vit_b` for ViT-Base backbone,  `vit_l` for ViT-Large,  `vit_h` for ViT-Huge. Use `vit_s` for ViT-S.
 - `--input`: the input image path.
 - `--output`: the output image path or folder.
 
@@ -205,14 +207,14 @@ Combination with a single-point scene text spotter, [SPTSv2](https://github.com/
 
 - [x] Release inference and evaluation codes.
 - [x] Release model weights.
-- [ ] Release Efficient Hi-SAM
+- [x] Release Efficient Hi-SAM
 - [ ] Release training codes
 - [ ] Release online demo.
 
 
 ## 💗 Acknowledgement
 
-- [segment-anything](https://github.com/facebookresearch/segment-anything)
+- [segment-anything](https://github.com/facebookresearch/segment-anything), [EfficientSAM](https://github.com/yformer/EfficientSAM)
 - [HierText](https://github.com/google-research-datasets/hiertext), [Total-Text](https://github.com/cs-chan/Total-Text-Dataset), [TextSeg](https://github.com/SHI-Labs/Rethinking-Text-Segmentation)
 
 
