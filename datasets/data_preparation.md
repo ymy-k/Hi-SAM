@@ -6,6 +6,8 @@
 
 ![example](HierText/example.gif)
 
+To training Hi-SAM for hierarchical text segmentation, download the [training gt json file](https://1drv.ms/u/s!AimBgYV7JjTlgctgYM0CKmQuMfwk8Q?e=Z8e4eb), which is derived from [the gt in HierText repo](https://github.com/google-research-datasets/hiertext/tree/main/gt) by using `HierText/process_gt.py`.
+
 - **Total-Text**. Follow [the official repo of Total-Text](https://github.com/cs-chan/Total-Text-Dataset) to download the dataset. For text stroke segmentation, please download [the character level mask ground-truths](https://github.com/cs-chan/Total-Text-Dataset/tree/master/Groundtruth/Pixel/Character%20Level%20Mask).
 - **TextSeg**. Follow [the official repo of TextSeg](https://github.com/SHI-Labs/Rethinking-Text-Segmentation) to apply for the dataset.
 
@@ -24,7 +26,8 @@
 |  |- validation
 |  |- validation_gt
 |  |- test
-|  └  test_gt
+|  |- test_gt
+|  └  train_shrink_vert.json
 |- TotalText
 |  |- groundtruth_pixel
 |     |- Test

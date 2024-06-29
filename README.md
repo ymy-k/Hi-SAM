@@ -30,6 +30,7 @@ This is the official repository for Hi-SAM, a unified hierarchical text segmenta
 
 
 ## :fire: News
+- **[`2024/06/29`]**: Update the training codes.
 - **[`2024/03/24`]**: Update Efficient Hi-SAM-S leveraging [EfficientSAM](https://github.com/yformer/EfficientSAM).
 - **[`2024/02/23`]**: Inference and evaluation codes are released. Checkpoints are available. Some applications are provided.
 
@@ -82,7 +83,16 @@ You can download the following model weights and put them in `pretrained_checkpo
 
 The results of Hi-SAM on the test set are reported here.
 
-:star: **`Note`:** For faster downloading and saving storage, **above checkpoints do not contain the parameters in SAM's ViT image encoder**. Please follow [segment-anything](https://github.com/facebookresearch/segment-anything) to achieve `sam_vit_b_01ec64.pth`, `sam_vit_l_0b3195.pth`, `sam_vit_h_4b8939.pth` and put them in `pretrained_checkpoint/` for loading the frozen parameters in ViT image encoder.
+:star: **`Note`:** 
+
+1. For faster downloading and saving storage, **above checkpoints do not contain the parameters in SAM's ViT image encoder**. Please follow [segment-anything](https://github.com/facebookresearch/segment-anything) to achieve `sam_vit_b_01ec64.pth`, `sam_vit_l_0b3195.pth`, `sam_vit_h_4b8939.pth` and put them in `pretrained_checkpoint/` for loading the frozen parameters in ViT image encoder.
+2. **To train Hi-SAM in yourself, in addition to download the SAM weights, please also download the isolated mask decoder weights and put them in `pretrained_checkpoint/` for initializing H-Decoder (or you can separate the mask decoder part from SAM weights in yourself).** [vit_b_maskdecoder.pth](https://1drv.ms/u/s!AimBgYV7JjTlgcth1ceH68P-vOF87g?e=lK2bIL) & [vit_l_maskdecoder.pth](https://1drv.ms/u/s!AimBgYV7JjTlgctjx03utTjx31EexA?e=HG7zZD) & [vit_h_maskdecoder.pth](https://1drv.ms/u/s!AimBgYV7JjTlgctig8BXzlCQaPm1ng?e=6XOCid) from [segment-anything](https://github.com/facebookresearch/segment-anything), [vit_s_maskdecoder.pth](https://1drv.ms/u/s!AimBgYV7JjTlgctkk7xz198vz5TOhQ?e=sCfhYm) from [EfficientSAM](https://github.com/yformer/EfficientSAM). For example, if you want to train Hi-SAM-L, it looks like this in `pretrained_checkpoint/`:
+
+```
+|- pretrained_checkpoint
+|  |- sam_vit_l_0b3195.pth
+|  └  vit_l_maskdecoder.pth
+```
 
 ## :arrow_forward: Usage
 
@@ -170,8 +180,31 @@ python eval.py --gt=gt/validation.jsonl --result=res_1500pts.jsonl --output=scor
 cd ..
 ```
 
-The evaluation process will take about 20 minutes. The evaluation metrics will be saved in the txt file determined by `--output`.
+The evaluation process will take about 20 minutes. The evaluation metrics will be saved in thet file determined by `--output`.
 
+### **3. Training**
+
+Please follow [data_preparation.md](datasets/data_preparation.md) to prepare the datasets and prepare the required pretrained weights mentioned in section Checkpoints.
+
+**3.1 Training Hi-SAM**
+
+For example, to train Hi-SAM-L on HierText:
+
+```
+python -m torch.distributed.launch --nproc_per_node=8 train.py --checkpoint ./pretrained_checkpoint/sam_vit_l_0b3195.pth --model-type vit_l --output work_dirs/hi_sam_l/ --batch_size_train 1 --lr_drop_epoch 130 --max_epoch_num 150 --train_datasets hiertext_train --val_datasets hiertext_val --hier_det --find_unused_params
+```
+
+The released models are trained on 8 V100 (32G) GPUs (Hi-SAM-L takes about 2 days). The saved models after the final epoch are used for evaluation.
+
+**3.2 Training SAM-TSS**
+
+For example, to train SAM-TSS-L on TextSeg:
+
+```
+python -m torch.distributed.launch --nproc_per_node=8 train.py --checkpoint ./pretrained_checkpoint/sam_vit_l_0b3195.pth --model-type vit_l --output work_dirs/sam_tss_l_textseg/ --batch_size_train 1 --max_epoch_num 70 --train_datasets textseg_train --val_datasets textseg_val
+```
+
+The released models are trained on 8 V100 (32G) GPUs (SAM-TSS only takes a few hours). The best models on validation set are used for evaluation.
 
 ## :eye: Applications
 
@@ -208,7 +241,7 @@ Combination with a single-point scene text spotter, [SPTSv2](https://github.com/
 - [x] Release inference and evaluation codes.
 - [x] Release model weights.
 - [x] Release Efficient Hi-SAM
-- [ ] Release training codes
+- [x] Release training codes
 - [ ] Release online demo.
 
 
@@ -216,6 +249,7 @@ Combination with a single-point scene text spotter, [SPTSv2](https://github.com/
 
 - [segment-anything](https://github.com/facebookresearch/segment-anything), [EfficientSAM](https://github.com/yformer/EfficientSAM)
 - [HierText](https://github.com/google-research-datasets/hiertext), [Total-Text](https://github.com/cs-chan/Total-Text-Dataset), [TextSeg](https://github.com/SHI-Labs/Rethinking-Text-Segmentation)
+- The codebase is partially from [sam-hq](https://github.com/SysCV/sam-hq)
 
 
 ## :black_nib: Citation

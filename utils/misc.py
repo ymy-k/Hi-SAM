@@ -436,3 +436,95 @@ def gather(data, dst=0, group=None):
     else:
         dist.gather_object(data, None, dst=dst, group=group)
         return []
+
+
+def sample_foreground_points(batch_labels, batch_para_masks, batch_line_masks,
+                             batch_word_masks, batch_line2para_idx, k=20, np_per_line=2):
+    fg_points, select_line_masks, select_para_masks, select_word_masks = [], [], [], []
+    only_line = False
+    if len(batch_line_masks) > 0 and len(batch_word_masks) == 0:
+        only_line = True
+    dev = batch_labels.device
+    h, w = batch_labels.shape[-2:]
+    y = torch.arange(0, h, dtype=torch.float)
+    x = torch.arange(0, w, dtype=torch.float)
+    y, x = torch.meshgrid(y, x)
+    y = y.to(batch_labels)
+    x = x.to(batch_labels)
+
+    for b_i in range(len(batch_labels)):
+        line_masks = batch_line_masks[b_i].to(dev)
+        # filter line masks without intersection with stroke mask
+        intersection = (
+                (batch_labels[b_i] * line_masks) > 127
+        )  # (nl, h, w)
+        intersec_num = torch.sum(intersection.flatten(1), dim=1)
+        keep_index = torch.nonzero(intersec_num).reshape(-1)
+        keep_num = keep_index.numel()
+
+        intersection = intersection[keep_index]
+        intersec_num = intersec_num[keep_index]
+        line_masks = line_masks[keep_index]
+        if not only_line:
+            line2para_idx = batch_line2para_idx[b_i][keep_index]
+            para_masks = batch_para_masks[b_i][line2para_idx].to(dev)
+            word_masks_per_line = batch_word_masks[b_i][keep_index].to(dev)
+        if keep_num == 0:
+            sampled_xy = torch.tensor([[w / 2, h / 2]], dtype=torch.float32, device=dev)
+            fg_points.append(sampled_xy)
+            line_masks = torch.zeros((1, h, w)).to(line_masks)
+            select_line_masks.append(line_masks.unsqueeze(1))
+            if not only_line:
+                para_masks = torch.zeros((1, h, w)).to(para_masks)
+                select_para_masks.append(para_masks.unsqueeze(1))
+                word_masks_per_line = torch.zeros((1, h, w)).to(word_masks_per_line)
+                select_word_masks.append(word_masks_per_line.unsqueeze(1))
+            continue
+        x_idx = torch.masked_select(x, intersection)
+        y_idx = torch.masked_select(y, intersection)
+        del intersection
+        intersec_cumsum = torch.cumsum(intersec_num, dim=0)
+        start_idx = intersec_cumsum - intersec_num
+        np_per_line = min(np_per_line, intersec_num.min().item())
+        line_masks = torch.repeat_interleave(line_masks, np_per_line, dim=0)
+        if not only_line:
+            para_masks = torch.repeat_interleave(para_masks, np_per_line, dim=0)
+            word_masks_per_line = torch.repeat_interleave(word_masks_per_line, np_per_line, dim=0)
+        pos_idx = np.ravel([
+            random.sample(range(start_idx[p_i].item(), intersec_cumsum[p_i].item()), np_per_line)
+            for p_i in range(keep_num)
+        ])
+
+        sampled_x = x_idx[pos_idx]
+        sampled_y = y_idx[pos_idx]
+        sampled_xy = torch.cat((sampled_x[:, None], sampled_y[:, None]), dim=1)  # (k, 2)
+        # if sampled_xy.shape[0] == 0:
+        #     sampled_xy = torch.tensor([[w/2, h/2]], dtype=torch.float32, device=dev)
+        #     para_masks = torch.zeros((1, h, w)).to(para_masks)
+        #     line_masks = torch.zeros((1, h, w)).to(line_masks)
+        #     word_masks_per_line = torch.zeros((1, h, w)).to(word_masks_per_line)
+
+        perm_index = torch.randperm(sampled_xy.shape[0])
+        sampled_xy = sampled_xy[perm_index]
+        line_masks = line_masks[perm_index]
+        if not only_line:
+            para_masks = para_masks[perm_index]
+            word_masks_per_line = word_masks_per_line[perm_index]
+
+        fg_points.append(sampled_xy)
+        select_line_masks.append(line_masks.unsqueeze(1))
+        del line_masks
+        if not only_line:
+            select_para_masks.append(para_masks.unsqueeze(1))  # (k, 1, h, w)
+            select_word_masks.append(word_masks_per_line.unsqueeze(1))
+            del para_masks
+            del word_masks_per_line
+    select_line_masks = torch.cat(select_line_masks, dim=0)
+    if not only_line:
+        select_para_masks = torch.cat(select_para_masks, dim=0)
+        select_word_masks = torch.cat(select_word_masks, dim=0)
+
+    if not only_line:
+        return fg_points, select_para_masks, select_line_masks, select_word_masks
+    else:
+        return fg_points, None, select_line_masks, None
