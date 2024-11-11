@@ -12,28 +12,29 @@
 
 This is the official repository for Hi-SAM, a unified hierarchical text segmentation model. Refer to our paper for more details.
 
+
+## :fire: News
+- **[`2024/11/08`]**: :rocket::rocket: Hi-SAM is accepted by IEEE TPAMI. The final version paper is updated to arxiv.
+- **[`2024/06/29`]**: Update the training codes.
+- **[`2024/03/24`]**: Update Efficient Hi-SAM-S leveraging [EfficientSAM](https://github.com/yformer/EfficientSAM).
+- **[`2024/02/23`]**: Inference and evaluation codes are released. Checkpoints are available. Some applications are provided.
+
+
 ## :sparkles: Highlight
 
-![overview](.asset/overview.png)
+![overview](.asset/overview.jpg)
 
 - **Hierarchical Text Segmentation.** Hi-SAM unifies text segmentation across stroke, word, text-line, and paragraph levels. Hi-SAM also achieves layout analysis as a by-product.
 
 - **Automatic and Interactive.** Hi-SAM supports both automatic mask generation and interactive promptable mode. Given a single-point prompt, Hi-SAM provides word, text-line, and paragraph masks.
 
-- **High-Quality Text Stroke Segmentation & Stroke Labeling Assistant.** High-quality text stroke segmentation by introducing mask feature of 1024×1024 resolution with minimal modification in SAM's original mask decoder. Our contributed stroke level annotations for [HierText](https://github.com/google-research-datasets/hiertext) can be downloaded following [data_preparation.md](datasets/data_preparation.md). Some examples are displayed here:
+- **High-Quality Pixel-level Text (Stroke) Segmentation & Labeling Assistant.** High-quality pixel-level text (stroke) segmentation by introducing mask feature of 1024×1024 resolution with minimal modification in SAM's original mask decoder. Our contributed stroke level annotations for [HierText](https://github.com/google-research-datasets/hiertext) can be downloaded following [data_preparation.md](datasets/data_preparation.md). Some examples are displayed here:
 
 ![example](datasets/HierText/example.gif)
 
 
 ## :bulb: Overview of Hi-SAM
-![Hi-SAM](.asset/Hi-SAM.png)
-
-
-## :fire: News
-- **[`2024/11/08`]**: :rocket::rocket: Hi-SAM is accepted by IEEE TPAMI.
-- **[`2024/06/29`]**: Update the training codes.
-- **[`2024/03/24`]**: Update Efficient Hi-SAM-S leveraging [EfficientSAM](https://github.com/yformer/EfficientSAM).
-- **[`2024/02/23`]**: Inference and evaluation codes are released. Checkpoints are available. Some applications are provided.
+![Hi-SAM](.asset/Hi-SAM.jpg)
 
 
 ## :hammer_and_wrench: Install
@@ -49,29 +50,30 @@ cd Hi-SAM
 pip install -r requirements.txt
 ```
 
+
 ## :pushpin: Checkpoints
 
 You can download the following model weights and put them in `pretrained_checkpoint/`.
 
-- **SAM-TSS (only for text stroke segmentation)**
+- **SAM-TS [only for pixel-level text (stroke) segmentation]**
 
 |Model|Used Dataset|Weights|fgIOU|F-score|
 |:------:|:------:|:------:|:------:|:------:|
-|SAM-TSS-B|Total-Text|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcoycYfJS3jn8Zi5aQ?e=qsGFu4)|80.93|86.25|
-|SAM-TSS-L|Total-Text|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco3-gIk1_LtCjaUZg?e=RgYfYu)|84.59|88.69|
-|SAM-TSS-H|Total-Text|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco0WBDWOp4Va6mS0w?e=QPvtGL)|84.86|89.68|
+|SAM-TS-B|Total-Text|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcoycYfJS3jn8Zi5aQ?e=qsGFu4)|80.93|86.25|
+|SAM-TS-L|Total-Text|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco3-gIk1_LtCjaUZg?e=RgYfYu)|84.59|88.69|
+|SAM-TS-H|Total-Text|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco0WBDWOp4Va6mS0w?e=QPvtGL)|84.86|89.68|
 
 |Model|Used Dataset|Weights|fgIOU|F-score|
 |:------:|:------:|:------:|:------:|:------:|
-|SAM-TSS-B|TextSeg|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcow1U3IUTVOZoQPgQ?e=XGmher)|87.15|92.81|
-|SAM-TSS-L|TextSeg|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco2ogP59MnXtR6bSw?e=5iq3Rt)|88.77|93.79|
-|SAM-TSS-H|TextSeg|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco1z9sdUi1vXCsKgA?e=U3WPJy)|88.96|93.87|
+|SAM-TS-B|TextSeg|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcow1U3IUTVOZoQPgQ?e=XGmher)|87.15|92.81|
+|SAM-TS-L|TextSeg|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco2ogP59MnXtR6bSw?e=5iq3Rt)|88.77|93.79|
+|SAM-TS-H|TextSeg|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco1z9sdUi1vXCsKgA?e=U3WPJy)|88.96|93.87|
 
 |Model|Used Dataset|Weights|fgIOU|F-score|
 |:------:|:------:|:------:|:------:|:------:|
-|SAM-TSS-B|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcouDoj3oDJtpDKxtQ?e=teOm4L)|73.39|81.34|
-|SAM-TSS-L|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco4WC_2I3pMGOCcKg?e=y4XcNi)|78.37|84.99|
-|SAM-TSS-H|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcozVtoOKCQL_HCmsQ?e=fI6e1o)|79.27|85.63|
+|SAM-TS-B|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcouDoj3oDJtpDKxtQ?e=teOm4L)|73.39|81.34|
+|SAM-TS-L|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgco4WC_2I3pMGOCcKg?e=y4XcNi)|78.37|84.99|
+|SAM-TS-H|HierText|[OneDrive](https://1drv.ms/u/s!AimBgYV7JjTlgcozVtoOKCQL_HCmsQ?e=fI6e1o)|79.27|85.63|
 
 - **Hi-SAM** 
 
@@ -95,11 +97,12 @@ The results of Hi-SAM on the test set are reported here.
 |  └  vit_l_maskdecoder.pth
 ```
 
+
 ## :arrow_forward: Usage
 
 ### **1. Visualization Demo**
 
-**1.1 Text stroke segmentation (for SAM-TSS & Hi-SAM):**
+**1.1 Pixel-level Text (Stroke) Segmentation (for SAM-TS & Hi-SAM):**
 
 ```
 python demo_hisam.py --checkpoint pretrained_checkpoint/sam_tss_l_hiertext.pth --model-type vit_l --input demo/2e0cb33320757201.jpg --output demo/
@@ -132,9 +135,9 @@ python demo_hisam.py --checkpoint pretrained_checkpoint/hi_sam_l.pth --model-typ
 
 Please follow [data_preparation.md](datasets/data_preparation.md) to prepare the datasets at first.
 
-**2.1 Text Stroke Segmentation (for SAM-TSS & Hi-SAM)**
+**2.1 Pixel-level Text (Stroke) Segmentation (for SAM-TS & Hi-SAM)**
 
-If you only want to evaluate the text stroke segmentation part performance, run the following script:
+If you only want to evaluate the pixel-level text (stroke) segmentation part performance, run the following script:
 
 ```
 python -m torch.distributed.launch --nproc_per_node=8 train.py --checkpoint <saved_model_path> --model-type <select_vit_type> --val_datasets hiertext_test --eval
@@ -156,7 +159,7 @@ python eval_img.py
 
 **2.2 Hierarchical Text Segmentation (for Hi-SAM)**
 
-For stroke level performance, please follow **section 2.1**. For word, text-line, and paragraph level performance on HierText, please follow the subsequent steps.
+For pixel-level text (stroke) performance, please follow **section 2.1**. For word, text-line, and paragraph level performance on HierText, please follow the subsequent steps.
 
 **Step 1:** run the following scripts to get the required jsonl file:
 
@@ -197,15 +200,16 @@ python -m torch.distributed.launch --nproc_per_node=8 train.py --checkpoint ./pr
 
 The released models are trained on 8 V100 (32G) GPUs (Hi-SAM-L takes about 2 days). The saved models after the final epoch are used for evaluation.
 
-**3.2 Training SAM-TSS**
+**3.2 Training SAM-TS**
 
-For example, to train SAM-TSS-L on TextSeg:
+For example, to train SAM-TS-L on TextSeg:
 
 ```
-python -m torch.distributed.launch --nproc_per_node=8 train.py --checkpoint ./pretrained_checkpoint/sam_vit_l_0b3195.pth --model-type vit_l --output work_dirs/sam_tss_l_textseg/ --batch_size_train 1 --max_epoch_num 70 --train_datasets textseg_train --val_datasets textseg_val
+python -m torch.distributed.launch --nproc_per_node=8 train.py --checkpoint ./pretrained_checkpoint/sam_vit_l_0b3195.pth --model-type vit_l --output work_dirs/sam_ts_l_textseg/ --batch_size_train 1 --max_epoch_num 70 --train_datasets textseg_train --val_datasets textseg_val
 ```
 
-The released models are trained on 8 V100 (32G) GPUs (SAM-TSS only takes a few hours). The best models on validation set are used for evaluation.
+The released models are trained on 8 V100 (32G) GPUs (SAM-TS only takes a few hours). The best models on validation set are used for evaluation.
+
 
 ## :eye: Applications
 
@@ -236,6 +240,7 @@ python demo_text_detection.py --checkpoint pretrained_checkpoint/line_detection_
 Combination with a single-point scene text spotter, [SPTSv2](https://github.com/bytedance/SPTSv2). SPTSv2 can recognize scene texts but only predicts a single-point position for one instance. Providing the point position as prompt to Hi-SAM, the intact text mask can be achieved. Some demo figures are provided bellow, the green stars indicate the point prompts. The masks are generated by the word detection model in section **2. Text Detection**.
 
 ![spotting](.asset/applications/spotting.png)
+
 
 ## :label: TODO 
 
