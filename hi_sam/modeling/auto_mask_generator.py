@@ -124,7 +124,7 @@ class AutoMaskGenerator:
             else:
                 fg_mask = (high_res_mask > self.model.mask_threshold).squeeze(1)[0]  # (1024, 1024)
             del low_res_mask
-            del high_res_mask
+            # del high_res_mask
 
         # sample fg_points randomly
         y_idx, x_idx = torch.where(fg_mask > 0)
@@ -137,7 +137,7 @@ class AutoMaskGenerator:
         fg_points = torch.cat((x_idx, y_idx), dim=1)[:, None, :]  # (k, 1, 2)
         if from_low_res and (not self.is_fgmask_set):
             fg_points = fg_points * 4  # from 256 to 1024
-        return fg_points
+        return fg_points, high_res_mask
 
     @torch.no_grad()
     def forward_hi_decoder(
@@ -162,8 +162,8 @@ class AutoMaskGenerator:
         from_low_res: bool = False,
         fg_points_num: int = 1500,
         batch_points_num: int = 100,
-        score_thresh: float = 0.5,
-        nms_thresh: float = 0.5,
+        score_thresh: dict = {"word": 0.3, "line": 0.5, "para": 0.5, "refined_word": 0.3},
+        nms_thresh: dict = {"word": 0.3, "line": 0.5, "para": 0.5, "refined_word": 0.3},
         return_logits: bool = False,
         oracle_point_prompts: np.ndarray = None,
     ):
@@ -176,8 +176,10 @@ class AutoMaskGenerator:
             oracle_point_prompts = self.transform.apply_coords(oracle_point_prompts, self.original_size)
             fg_points = torch.tensor(oracle_point_prompts, dtype=torch.int64, device=self.features.device)
             fg_points = fg_points[:, None, :]
+            hr_mask = None
         else:
-            fg_points = self.forward_foreground_points(from_low_res, fg_points_num)
+            fg_points, hr_mask = self.forward_foreground_points(from_low_res, fg_points_num)
+            hr_mask = self.model.postprocess_masks(hr_mask, self.input_size, self.original_size)
         fg_points_num = fg_points.shape[0]
         if fg_points_num == 0:
             return None, None, None
@@ -189,7 +191,7 @@ class AutoMaskGenerator:
                 fg_points[start_idx:end_idx, :, :],
                 torch.ones((end_idx-start_idx, 1), device=fg_points.device)
             )
-            hi_masks_logits = hi_masks_logits[:, 1:, :, :]
+            # hi_masks_logits = hi_masks_logits[:, 1:, :, :]
             masks.append(hi_masks_logits)
             scores.append(hi_iou_preds)
             word_masks.append(word_masks_logits)
@@ -198,35 +200,31 @@ class AutoMaskGenerator:
         masks = torch.cat(masks, dim=0)  # (fg_points_num, x, 256, 256)
         scores = torch.cat(scores, dim=0)  # (fg_points_num, x)
         word_masks = torch.cat(word_masks, dim=0)
-
-        # filter low quality lines
-        keep = scores[:, 1] > score_thresh
-        if keep.sum() == 0:
-            return None, None, None
-        masks = masks[keep]
-        scores = scores[keep]
-        word_masks = word_masks[keep]
-
-        # conduct mask nms, use 256x256 mask for nms to save memory and time
-        updated_scores = matrix_nms(
-            seg_masks=(masks[:, -2, :, :] > self.model.mask_threshold),
-            scores=scores[:, 1]
-        )
-        keep = updated_scores > nms_thresh
-        if keep.sum() == 0:
-            return None, None, None
-        masks = masks[keep]  # line and paragraph masks
-        scores = scores[keep]
-        word_masks = word_masks[keep]
-        affinity = get_para_iou(para_masks=(masks[:, -1, :, :] > self.model.mask_threshold))
         
-        del masks
-        word_masks = self.model.postprocess_masks(word_masks, self.input_size, self.original_size)
-        word_masks = word_masks > self.model.mask_threshold
-        masks_np = word_masks.cpu().numpy()
-        scores_np = scores.cpu().numpy()
-        affinity_np = affinity.cpu().numpy()
-        return masks_np, scores_np, affinity_np
+        masks = {"word": masks[:, 0], "line": masks[:, 1], "para": masks[:, 2], "refined_word": word_masks[:, 0]}
+        scores = {"word": scores[:, 0], "line": scores[:, 1], "para": scores[:, 2], "refined_word": scores[:, 0]}
+        for key in masks.keys():
+            # filter low quality lines
+            keep = scores[key] > score_thresh[key]
+            masks[key] = masks[key][keep]
+            scores[key] = scores[key][keep]
+            
+            # MNS
+            updated_scores = matrix_nms(
+                seg_masks=(masks[key] > self.model.mask_threshold),
+                scores=scores[key]
+            )
+            keep = updated_scores > nms_thresh[key]
+            masks[key] = masks[key][keep]
+            scores[key] = scores[key][keep]
+            
+            # postprocess
+            masks[key] = self.model.postprocess_masks(masks[key].unsqueeze(1), self.input_size, self.original_size)[:, 0]
+            masks[key] = (masks[key] > self.model.mask_threshold).cpu().numpy()
+            scores[key] = scores[key].cpu().numpy()
+        stroke = hr_mask.cpu().numpy()
+        return masks, scores, stroke
+
 
     def predict_text_detection(
         self,
