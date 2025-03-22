@@ -3,13 +3,13 @@
 <p align="center">
 <a href="https://paperswithcode.com/sota/hierarchical-text-segmentation-on-hiertext?p=hi-sam-marrying-segment-anything-model-for"><img src="https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/hi-sam-marrying-segment-anything-model-for/hierarchical-text-segmentation-on-hiertext"></a>
 <a href="https://arxiv.org/abs/2401.17904"><img src="https://img.shields.io/badge/arXiv-2401.17904-b31b1b.svg"></a>
-<a href="https://ieeexplore.ieee.org/document/10750316"><img src="https://img.shields.io/badge/TPAMI-2024-blue"></a>
+<a href="https://ieeexplore.ieee.org/document/10750316"><img src="https://img.shields.io/badge/TPAMI-blue"></a>
 <a><img src="https://visitor-badge.laobi.icu/badge?page_id=ymy-k.Hi-SAM"></a>
 </p>
 
 > [Hi-SAM: Marrying Segment Anything Model for Hierarchical Text Segmentation](https://arxiv.org/abs/2401.17904).
 >
->  [IEEE TPAMI 2024]
+>  [IEEE TPAMI]
 
 This is the official repository for Hi-SAM, a unified hierarchical text segmentation model. Refer to our paper for more details.
 
@@ -263,13 +263,13 @@ Combination with a single-point scene text spotter, [SPTSv2](https://github.com/
 If you find Hi-SAM helpful in your research, please consider giving this repository a :star: and citing:
 
 ```bibtex
-@article{10750316,
+@article{ye2025hi,
   title={Hi-SAM: Marrying Segment Anything Model for Hierarchical Text Segmentation},
   author={Ye, Maoyuan and Zhang, Jing and Liu, Juhua and Liu, Chenyu and Yin, Baocai and Liu, Cong and Du, Bo and Tao, Dacheng},
   journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  year={2024},
-  volume={},
-  number={},
-  pages={1-16},
+  year={2025},
+  volume={47},
+  number={03},
+  pages={1431--1447},
 }
 ```
