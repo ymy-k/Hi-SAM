@@ -15,7 +15,7 @@ This is the official repository for Hi-SAM, a unified hierarchical text segmenta
 
 
 ## :fire: News
-- **[`2025/05/16`]**: :rocket::rocket: We release [LogicOCR](https://ymy-k.github.io/LogicOCR.github.io/), a benchmark designed to evaluate the logical reasoning abilities of Large Multimodal Models (LMMs) on text-rich images, while minimizing reliance on domain-specific knowledge. We offer key insights for enhancing multimodal reasoning.
+- **[`2025/05/16`]**: :rocket::rocket: We release [LogicOCR](https://github.com/MiliLab/LogicOCR), a benchmark designed to evaluate the logical reasoning abilities of Large Multimodal Models (LMMs) on text-rich images, while minimizing reliance on domain-specific knowledge. We offer key insights for enhancing multimodal reasoning.
 - **[`2024/11/08`]**: :rocket::rocket: Hi-SAM is accepted by IEEE TPAMI. The final version paper is updated to arxiv.
 - **[`2024/06/29`]**: Update the training codes.
 - **[`2024/03/24`]**: Update Efficient Hi-SAM-S leveraging [EfficientSAM](https://github.com/yformer/EfficientSAM).
